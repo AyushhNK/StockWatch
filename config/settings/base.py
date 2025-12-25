@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "apps.pricing",
     "apps.watchlists",
     "apps.notifications",
+
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -80,11 +82,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "stockwatch",
+        "USER": "postgres",
+        "PASSWORD": "helloworld",
+        # "Host":"db",
+        "HOST": "localhost",        # IMPORTANT: docker service name
+        "PORT": "5432",
+        "CONN_MAX_AGE": 60,          # persistent connections
+        "ATOMIC_REQUESTS": True,     # transaction safety
     }
 }
 
@@ -112,6 +120,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -147,9 +156,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.User"
 
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "StockWatch API",
+    "DESCRIPTION": "Distributed Stock Market Watchlist & Analytics API",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+
+    "COMPONENT_SPLIT_REQUEST": True,
+
+    "SECURITY": [{"bearerAuth": []}],
+    "SECURITY_DEFINITIONS": {
+        "bearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+        }
+    },
+}

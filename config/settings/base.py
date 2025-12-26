@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     "apps.stocks",
     "apps.pricing",
     "apps.watchlists",
+    "apps.alerts",
     "apps.notifications",
+    
 
     "drf_spectacular",
 ]
@@ -82,17 +84,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# settings.py
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "stockwatch",
-        "USER": "postgres",
-        "PASSWORD": "helloworld",
-        # "Host":"db",
-        "HOST": "localhost",        # IMPORTANT: docker service name
-        "PORT": "5432",
-        "CONN_MAX_AGE": 60,          # persistent connections
-        "ATOMIC_REQUESTS": True,     # transaction safety
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'stockwatch',
+        'USER': 'postgres',
+        'PASSWORD': 'helloworld',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
@@ -119,6 +119,9 @@ from datetime import timedelta
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }

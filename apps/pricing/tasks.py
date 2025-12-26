@@ -1,14 +1,16 @@
 from celery import shared_task
-from django.utils.timezone import now
-from apps.stocks.models import Stock
 from .models import StockPrice
+from apps.alerts.tasks import evaluate_alerts_for_symbol
+
 
 @shared_task
 def fetch_prices():
-    for stock in Stock.objects.filter(is_active=True):
-        StockPrice.objects.create(
-            stock=stock,
-            price=100.00,
-            source="mock_api",
-            timestamp=now()
-        )
+    symbol = "AAPL"
+    price = 192.50
+
+    StockPrice.objects.create(
+        symbol=symbol,
+        price=price
+    )
+
+    evaluate_alerts_for_symbol.delay(symbol, str(price))
